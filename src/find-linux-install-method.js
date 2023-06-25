@@ -19,6 +19,7 @@ const LINUX_CHANNELS = [
     string: "Home Brew Installation",
     func: linux_homebrewInstalled
   }
+  // TODO AUR
 ];
 
 const LINUX_CHANNELS_FALLBACK = "Manual Installation";
