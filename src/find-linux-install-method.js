@@ -1,44 +1,45 @@
 const fs = require("fs");
+const shell = require("shelljs");
 const utils = require("./utils.js");
 
+const LINUX_CHANNELS = [
+  {
+    string: "Flatpak Installation",
+    func: linux_flatpakInstalled
+  },
+  {
+    string: "Deb-Get Installation",
+    func: linux_debGetInstalled
+  },
+  {
+    string: "Nix Installation",
+    func: linux_nixInstalled
+  },
+  {
+    string: "Home Brew Installation",
+    func: linux_homebrewInstalled
+  }
+];
+
+const LINUX_CHANNELS_FALLBACK = "Manual Installation";
+
 async function determineLinuxChannel() {
-  let flatpakInstall = linux_flatpakInstalled();
+  for (let i = 0; i < LINUX_CHANNELS.length; i++) {
+    let channel = LINUX_CHANNELS[i];
 
-  let flatpakInstallCheck = utils.checkInstall(flatpakInstall, "Flatpak Installation");
+    let install = await channel.func();
 
-  if (typeof flatpakInstallCheck === "string") {
-    return flatpakInstallCheck;
-  }
+    let installCheck = utils.checkInstall(install, chennel.string);
 
-  let debGetInstall = linux_debGetInstalled();
-
-  let debGetInstallCheck = utils.checkInstall(debGetInstall, "Deb-Get Installation");
-
-  if (typeof debGetInstallCheck === "string") {
-    return debGetInstallCheck;
-  }
-
-  let nixInstall = linux_nixInstalled();
-
-  let nixInstallCheck = utils.checkInstall(nixInstall, "Nix Installation");
-
-  if (typeof nixInstallCheck === "string") {
-    return nixInstallCheck;
-  }
-
-  let homebrewInstall = linux_homebrewInstalled();
-
-  let homebrewInstallCheck = utils.checkInstall(homebrewInstall, "Home Brew Installation");
-
-  if (typeof homebrewInstallCheck === "string") {
-    return homebrewInstallCheck;
+    if (typeof installCheck === "string") {
+      return installCheck;
+    }
   }
 
   // We haven't been able to determine any package managers that installed Pulsar
   // So we will assume it was installed manually by the user. And allow them to do
   // so again.
-  return "Manual Installation";
-
+  return LINUX_CHANNELS_FALLBACK;
 }
 
 function linux_homebrewInstalled() {
@@ -121,5 +122,8 @@ function linux_flatpakInstalled() {
 
 module.exports = {
   determineLinuxChannel,
+  linux_homebrewInstalled,
+  linux_nixInstalled,
+  linux_debGetInstalled,
   linux_flatpakInstalled,
 };

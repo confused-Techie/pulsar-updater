@@ -2,35 +2,44 @@ const Registry = require("winreg");
 const shell = require("shelljs");
 const utils = require("./utils.js");
 
+const WINDOWS_CHANNELS = [
+  {
+    string: "Chocolatey Installation",
+    func: windows_chocoInstalled
+    // We MUST check all package managers first on windows, as end installs are identical
+  },
+  {
+    string: "winget Installation",
+    func: windows_wingetInstalled
+  },
+  {
+    string: "User Installation",
+    func: windows_isUserInstalled
+  },
+  {
+    string: "Machine Installation",
+    func: windows_isMachineInstalled
+  }
+];
+
+const WINDOWS_CHANNELS_FALLBACK = "Portable Installation";
+
 async function determineWindowsChannel() {
-  // We MUST check if installed via choco first. As in the registry
-  let chocolateyInstall = await windows_chocoInstalled();
+  for (let i = 0; i < WINDOWS_CHANNELS.length; i++) {
+    let channel = WINDOWS_CHANNELS[i];
 
-  let chocolateyInstallCheck = utils.checkInstall(chocolateyInstall, "Chocolatey Installation");
+    let install = await channel.func();
 
-  if (typeof chocolateyInstallCheck === "string") {
-    return chocolateyInstallCheck;
-  }
+    let installCheck = utils.checkInstall(install, channel.string);
 
-  let userInstall = await windows_isUserInstalled();
-
-  let userInstallCheck = utils.checkInstall(userInstall, "User Installation");
-
-  if (typeof userInstallCheck === "string") {
-    return userInstallCheck;
-  }
-
-  let machineInstall = await windows_isMachineInstalled();
-
-  let machineInstallCheck = utils.checkInstall(machineInstall, "Machine Installation");
-
-  if (typeof machineInstallCheck === "string") {
-    return machineInstallCheck;
+    if (typeof installCheck === "string") {
+      return installCheck;
+    }
   }
 
   // Since we now know that Pulsar hasn't been installed, we should assume this
   // is a portable installation
-  return "Portable Installation";
+  return WINDOWS_CHANNELS_FALLBACK;
 }
 
 function windows_isUserInstalled() {
@@ -85,9 +94,28 @@ function windows_chocoInstalled() {
   }
 }
 
+function windows_wingetInstalled() {
+  if (!shell.which("winget")) {
+    return false;
+  }
+
+  let wingetCheck = shell.exec("winget show Pulsar");
+
+  if (wingetCheck.code !== 0) {
+    return false;
+  }
+
+  if (wingetCheck.stdout.includes("Pulsar")) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 module.exports = {
   determineWindowsChannel,
   windows_isUserInstalled,
   windows_isMachineInstalled,
   windows_chocoInstalled,
+  windows_wingetInstalled,
 };

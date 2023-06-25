@@ -22,7 +22,11 @@ async function main() {
   }
   // Unused aix, freebsd, openbsd, sunos, android
 
-  return returnValue;
+  return {
+    platform: process.platform,
+    arch: process.arch,
+    installMethod: returnValue
+  };
 }
 
 
