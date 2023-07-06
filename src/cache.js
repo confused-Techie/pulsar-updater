@@ -30,6 +30,10 @@ function getCacheItem(key) {
   return null;
 }
 
+function empty(key) {
+  localStorage.removeItem(cacheKeyForPath(key));
+}
+
 function isItemExpired(item) {
   if (!navigator.onLine || item.createdOn < expiry()) {
     return false;
@@ -53,4 +57,5 @@ module.exports = {
   setCacheItem,
   getCacheItem,
   isItemExpired,
+  empty
 };

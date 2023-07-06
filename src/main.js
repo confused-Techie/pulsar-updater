@@ -8,19 +8,19 @@ class PulsarUpdater {
     this.cache = require("./cache.js");
 
     this.disposables.add(
-      atom.commands.add('core', 'pulsar-updater:check-for-updates', () => {
+      atom.commands.add('application', 'pulsar-updater:check-for-updates', () => {
         this.checkForUpdates();
       })
     );
 
+    // Setup an event listener for something after the editor has launched
   }
 
   deactivate() {
     this.disposables.dispose();
-  }
-
-  consumeStatusBar(statusBar) {
-
+    superagent = null;
+    findInstallMethod = null;
+    this.cache = null;
   }
 
   async checkForUpdates() {
@@ -42,8 +42,30 @@ class PulsarUpdater {
 
         let installMethod = await findInstallMethod();
 
-        // Now we need to do something with our need to update and install channel
-        // Maybe something on the status bar, a notification?
+        // Lets now trigger a notification to alert the user
+        const dismissUntilNextLaunch = () => {
+          // emptying the cache, will cause the next check to succeed
+          this.cache.empty("last-update-check");
+        };
+
+        let objButtonForInstallMethod = this.getObjButtonForInstallMethod(installMethod);
+
+        atom.notifications.addInfo('An update for Pulsar is available.', {
+          detail: this.getNotificationText(installMethod, latestVersion),
+          dismissable: true,
+          buttons: [
+            {
+              text: "Dismiss"
+            },
+            {
+              text: "Dismiss until next launch.",
+              onDidClick: dismissUntilNextLaunch
+            },
+            // Below we optionally add a button for the install method. That may
+            // open to a pulsar download URL, if available for installation method
+            (typeof objButtonForInstallMethod === "object" && objButtonForInstallMethod)
+          ]
+        });
 
       } // else don't update, rely on cache set above
     } else {
@@ -67,6 +89,63 @@ class PulsarUpdater {
     // We can be fast and simply check if the top of the array is newer than our
     // current version. Since the return is ordered
     return res.body[0].tag_name;
+  }
+
+  getNotificationText(installMethod, latestVersion) {
+    let returnText = `Pulsar ${latestVersion} is available.\n`;
+
+    switch(installMethod.installMethod) {
+      case "Flatpak Installation":
+        returnText += "Install the latest version by running `flatpak update`.";
+        break;
+      case "Deb-Get Installation":
+        returnText += "Install the latest version by running `sudo deb-get update`.";
+        break;
+      case "Nix Installation":
+        // TODO find nix update command
+        returnText += "Install the latest version via Nix.";
+        break;
+      case "Home Brew Installation":
+        returnText += "Install the latest version by running `brew upgrade pulsar`.";
+        break;
+      case "winget Installation":
+        returnText += "Install the latest version by running `winget upgrade pulsar`.";
+        break;
+      case "Chocolatey Installation":
+        returnText += "Install the latest version by running `choco upgrade pulsar`.";
+        break;
+      case "User Installation":
+      case "Machine Installation":
+      case "Portable Installation":
+      case "Manual Installation":
+      default:
+        returnText += "Download the latest version from the Pulsar Website or GitHub.";
+        break;
+    }
+
+    return returnText;
+  }
+
+  getObjButtonForInstallMethod(installMethod) {
+    let returnObj = null;
+
+    const openWeb = (e) => {
+      e.preventDefault();
+      shell.openExternal("https://github.com/pulsar-edit/pulsar/releases");
+    };
+
+    switch(installMethod.installMethod) {
+      case "User Installation":
+      case "Machine Installation":
+      default:
+        returnObj = {
+          text: "Download from GitHub",
+          onDidClick: openWeb
+        };
+        break;
+    }
+
+    return returnObj;
   }
 
 }

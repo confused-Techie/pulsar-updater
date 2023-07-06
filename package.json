@@ -4,7 +4,7 @@
   "description": "",
   "main": "./src/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "pulsar --test spec"
   },
   "engines": {
     "atom": ">=1.106.0 <2.0.0"
