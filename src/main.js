@@ -95,6 +95,15 @@ class PulsarUpdater {
     let returnText = `Pulsar ${latestVersion} is available.\n`;
 
     switch(installMethod.installMethod) {
+      case "Developer Mode":
+        returnText += "Since you're in developer mode, Pulsy trusts you know how to update. :)";
+        break;
+      case "Safe Mode":
+        returnText += "Declining update suggestion since Pulsar is in Safe Mode.";
+        break;
+      case "Spec Mode":
+        returnText += "Declining update suggestion since Pulsar is in Spec Mode.";
+        break;
       case "Flatpak Installation":
         returnText += "Install the latest version by running `flatpak update`.";
         break;

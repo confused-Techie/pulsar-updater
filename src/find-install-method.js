@@ -10,9 +10,17 @@ const { determineMacOSChannel } = require("./find-macos-install-method.js");
 
 async function main() {
   let returnValue = "";
-  //if (atom.inDevMode()) {
-  //  return "Developer Mode";
-  //}
+  if (atom.inDevMode()) {
+    return "Developer Mode";
+  }
+
+  if (atom.inSafeMode()) {
+    return "Safe Mode";
+  }
+
+  if (atom.inSpecMode()) {
+    return "Spec Mode";
+  }
 
   if (process.platform === "win32") {
     returnValue = await determineWindowsChannel();

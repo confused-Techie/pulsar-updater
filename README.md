@@ -22,6 +22,9 @@ Once this package is updated, in short it will do the following:
 
 Since a major part of the functionality of this package is attempting to determine the installation method, it's important to list them all here:
 
+* Universal: Developer Mode
+* Universal: Safe Mode
+* Universal: Spec Mode
 * Windows: Chocolatey Installation
 * Windows: winget Installation
 * Windows: User Installation
@@ -31,6 +34,6 @@ Since a major part of the functionality of this package is attempting to determi
 * Linux: Deb-Get Installation
 * Linux: Nix Installation
 * Linux: Home Brew Installation
-* Linux: Manual Installation 
+* Linux: Manual Installation
 * macOS: Home Brew Installation
 * macOS: Manual Installation
