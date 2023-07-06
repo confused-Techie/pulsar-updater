@@ -1,7 +1,8 @@
-const t = require("./src/find-install-method.js");
+//const t = require("./src/find-install-method.js");
+const t = require("./src/main.js");
 
 (async () => {
-  let f = await t();
+  let f = await t.newestRelease();
   console.log(f);
 })();
 

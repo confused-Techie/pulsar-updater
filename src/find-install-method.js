@@ -1,5 +1,6 @@
 const { determineWindowsChannel } = require("./find-windows-install-method.js");
 const { determineLinuxChannel } = require("./find-linux-install-method.js");
+const { determineMacOSChannel } = require("./find-macos-install-method.js");
 
 
 // This module will do whatever it can to determine the installation method.

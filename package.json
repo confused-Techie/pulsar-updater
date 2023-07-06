@@ -15,6 +15,7 @@
   "repository": "https://github.com/pulsar-edit/pulsar",
   "dependencies": {
     "shelljs": "^0.8.5",
+    "superagent": "^8.0.9",
     "winreg": "^1.2.4"
   }
 }

@@ -9,7 +9,7 @@
 function setCacheItem(key, item) {
   let obj = {
     createdOn: Date.now(),
-    data: item
+    data: JSON.stringify(item)
   };
 
   localStorage.setItem(cacheKeyForPath(key), JSON.stringify(obj));
