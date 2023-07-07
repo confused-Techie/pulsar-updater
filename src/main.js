@@ -47,7 +47,7 @@ class PulsarUpdater {
         let installMethod =
           this.cache.getCacheItem(`installMethod.${atom.getVersion()}` ?? await findInstallMethod();
 
-       this.cache.setCacheItem(`installMethod.${atom.getVersion()}`, installMethod);
+        this.cache.setCacheItem(`installMethod.${atom.getVersion()}`, installMethod);
 
         // Lets now trigger a notification to alert the user
         const dismissUntilNextLaunch = () => {
