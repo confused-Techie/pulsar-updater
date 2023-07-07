@@ -35,11 +35,15 @@ function empty(key) {
 }
 
 function isItemExpired(item) {
-  if (!navigator.onLine || item.createdOn < expiry()) {
+  if (!online() || (Date.now() - item.createdOn) < expiry()) {
     return false;
   } else {
     return true;
   }
+}
+
+function online() {
+  return navigator.onLine;
 }
 
 function cacheKeyForPath(path) {
@@ -57,5 +61,7 @@ module.exports = {
   setCacheItem,
   getCacheItem,
   isItemExpired,
-  empty
+  empty,
+  cacheKeyForPath,
+  online
 };

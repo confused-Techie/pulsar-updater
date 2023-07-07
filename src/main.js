@@ -10,8 +10,11 @@ class PulsarUpdater {
     this.disposables.add(
       atom.commands.add('application', 'pulsar-updater:check-for-updates', () => {
         this.checkForUpdates();
-      }),
-      atom.commands.add('application', 'pulsar-updater:clear-cache', () => {
+      })
+    );
+
+    this.disposables.add(
+      atom.commands.add("application", "pulsar-updater:clear-cache", () => {
         this.cache.empty("last-update-check");
         this.cache.empty(`installMethod.${atom.getVersion()}`);
       })
@@ -45,7 +48,7 @@ class PulsarUpdater {
         findInstallMethod ??= require("./find-install-method.js");
 
         let installMethod =
-          this.cache.getCacheItem(`installMethod.${atom.getVersion()}` ?? await findInstallMethod();
+          this.cache.getCacheItem(`installMethod.${atom.getVersion()}`) ?? await findInstallMethod();
 
         this.cache.setCacheItem(`installMethod.${atom.getVersion()}`, installMethod);
 
