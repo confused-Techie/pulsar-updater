@@ -8,15 +8,18 @@ class PulsarUpdater {
     this.cache = require("./cache.js");
 
     this.disposables.add(
-      atom.commands.add('application', 'pulsar-updater:check-for-updates', () => {
-        this.checkForUpdates();
+      atom.commands.add("atom-workspace", {
+        "pulsar-updater:check-for-update": () => {
+          this.checkForUpdates();
+        }
       })
     );
-
     this.disposables.add(
-      atom.commands.add("application", "pulsar-updater:clear-cache", () => {
-        this.cache.empty("last-update-check");
-        this.cache.empty(`installMethod.${atom.getVersion()}`);
+      atom.commands.add("atom-workspace", {
+        "pulsar-updater:clear-cache": () => {
+          this.cache.empty("last-update-check");
+          this.cache.empty(`installMethod.${atom.getVersion()}`);
+        }
       })
     );
 
