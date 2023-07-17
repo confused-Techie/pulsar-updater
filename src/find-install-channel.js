@@ -2,6 +2,12 @@ const Registry = require("winreg");
 const shell = require("shelljs");
 const fs = require("fs");
 
+// https://github.com/shelljs/shelljs/wiki/Electron-compatibility
+// ShellJS is not totally compatible within Electron.
+// We may need to look at running this within a task, but otherwise this may be
+// sufficient to get `exec` working
+shell.config.execPath = shell.which("node").toString();
+
 function windows_isUserInstalled() {
   return new Promise((resolve, reject) => {
     let userInstallReg = new Registry({

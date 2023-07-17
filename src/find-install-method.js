@@ -1,7 +1,3 @@
-const { determineWindowsChannel } = require("./find-windows-install-method.js");
-const { determineLinuxChannel } = require("./find-linux-install-method.js");
-const { determineMacOSChannel } = require("./find-macos-install-method.js");
-
 const findInstallChannel = require("./find-install-channel.js");
 
 
@@ -111,7 +107,7 @@ async function determineChannel(channels, fallback) {
   for (let i = 0; i < channels.length; i++) {
     let channel = channels[i];
 
-    let install await channel.func();
+    let install = await channel.func();
 
     if (typeof install === "boolean" && install && typeof channel.string === "string") {
       return channel.string;

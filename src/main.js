@@ -40,7 +40,7 @@ class PulsarUpdater {
       // Null means that there is no previous check, or the last check expired
       let latestVersion = await this.newestRelease();
 
-      let shouldUpdate = atom.versionSatisfies(`>= ${latestVersion}`);
+      let shouldUpdate = !atom.versionSatisfies(`>= ${latestVersion}`);
 
       if (shouldUpdate) {
         this.cache.setCacheItem("last-update-check", {
