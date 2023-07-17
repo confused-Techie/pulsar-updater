@@ -24,7 +24,7 @@ function getCacheItem(key) {
   let cached = JSON.parse(obj);
 
   if (typeof cached === "object" && !isItemExpired(cached)) {
-    return cached.data;
+    return JSON.parse(cached.data);
   }
 
   return null;

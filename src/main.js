@@ -1,6 +1,7 @@
 const { CompositeDisposable } = require("atom");
 let superagent;
 let findInstallMethod;
+let shell;
 
 class PulsarUpdater {
   activate() {
@@ -24,6 +25,11 @@ class PulsarUpdater {
     );
 
     // Setup an event listener for something after the editor has launched
+
+    // Lets check for an update right away, likely following some config option
+    if (atom.config.get("pulsar-updater.checkForUpdatesOnLaunch")) {
+      this.checkForUpdates();
+    }
   }
 
   deactivate() {
@@ -56,23 +62,26 @@ class PulsarUpdater {
         this.cache.setCacheItem(`installMethod.${atom.getVersion()}`, installMethod);
 
         // Lets now trigger a notification to alert the user
-        const dismissUntilNextLaunch = () => {
-          // emptying the cache, will cause the next check to succeed
-          this.cache.empty("last-update-check");
-        };
 
         let objButtonForInstallMethod = this.getObjButtonForInstallMethod(installMethod);
 
-        atom.notifications.addInfo('An update for Pulsar is available.', {
+        const notification = atom.notifications.addInfo('An update for Pulsar is available.', {
           detail: this.getNotificationText(installMethod, latestVersion),
           dismissable: true,
           buttons: [
             {
-              text: "Dismiss"
+              text: "Dismiss",
+              onDidClick: () => {
+                notification.dismiss();
+              }
             },
             {
-              text: "Dismiss until next launch.",
-              onDidClick: dismissUntilNextLaunch
+              text: "Dismiss until next launch",
+              onDidClick: () => {
+                // emptying the cache, will cause the next check to succeed
+                this.cache.empty("last-update-check");
+                notification.dismiss();
+              }
             },
             // Below we optionally add a button for the install method. That may
             // open to a pulsar download URL, if available for installation method
@@ -151,9 +160,10 @@ class PulsarUpdater {
   getObjButtonForInstallMethod(installMethod) {
     let returnObj = null;
 
-    const openWeb = (e) => {
+    const openWebGitHub = (e) => {
       e.preventDefault();
-      shell.openExternal("https://github.com/pulsar-edit/pulsar/releases");
+      shell = shell || require("electron").shell;
+      shell.openExternal(`https://github.com/pulsar-edit/pulsar/releases/tag/${this.cache.getCacheItem("last-update-check").latestVersion}`);
     };
 
     switch(installMethod.installMethod) {
