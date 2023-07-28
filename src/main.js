@@ -13,10 +13,6 @@ class PulsarUpdater {
         "pulsar-updater:check-for-update": () => {
           this.checkForUpdates();
         },
-      })
-    );
-    this.disposables.add(
-      atom.commands.add("atom-workspace", {
         "pulsar-updater:clear-cache": () => {
           this.cache.empty("last-update-check");
           this.cache.empty(`installMethod.${atom.getVersion()}`);
@@ -78,10 +74,18 @@ class PulsarUpdater {
       let objButtonForInstallMethod =
         this.getObjButtonForInstallMethod(installMethod);
 
+      let notificationDetailText = this.getNotificationText(installMethod, latestVersion);
+
+      // Now the notification text may return the special string of "DO_NOT_PROMPT"
+      // If this text is seen, the notification is never shown
+      if (notificationDetailText === "DO_NOT_PROMPT") {
+        return;
+      }
+
       const notification = atom.notifications.addInfo(
         "An update for Pulsar is available.",
         {
-          detail: this.getNotificationText(installMethod, latestVersion),
+          detail: notificationDetailText,
           dismissable: true,
           buttons: [
             {
@@ -139,12 +143,13 @@ class PulsarUpdater {
           "Since you're in developer mode, Pulsy trusts you know how to update. :)";
         break;
       case "Safe Mode":
+        // The text can be this special value, to abort the notification from being shown
         returnText +=
-          "Declining update suggestion since Pulsar is in Safe Mode.";
+          "DO_NOT_PROMPT";
         break;
       case "Spec Mode":
         returnText +=
-          "Declining update suggestion since Pulsar is in Spec Mode.";
+          "DO_NOT_PROMPT";
         break;
       case "Flatpak Installation":
         returnText += "Install the latest version by running `flatpak update`.";
@@ -157,7 +162,7 @@ class PulsarUpdater {
         // TODO find nix update command
         returnText += "Install the latest version via Nix.";
         break;
-      case "Home Brew Installation":
+      case "Homebrew Installation":
         returnText +=
           "Install the latest version by running `brew upgrade pulsar`.";
         break;
@@ -187,12 +192,10 @@ class PulsarUpdater {
 
     const openWebGitHub = (e) => {
       e.preventDefault();
-      shell = shell || require("electron").shell;
-      shell.openExternal(
-        `https://github.com/pulsar-edit/pulsar/releases/tag/${
-          this.cache.getCacheItem("last-update-check").latestVersion
-        }`
-      );
+      shell ??= shell || require("electron").shell;
+      let latestVersion = this.cache.getCacheItem("last-update-check")?.latestVersion;
+      let tagSegment = latestVersion ? `tag/${latestVersion}` : "";
+      shell.openExternal(`https://github.com/pulsar-edit/pulsar/releases/${tagSegment}`);
     };
 
     switch (installMethod.installMethod) {

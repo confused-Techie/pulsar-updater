@@ -5,7 +5,7 @@ const INSTALL_CHANNELS = {
     fallback: "Manual Installation",
     channels: [
       {
-        string: "Home Brew Installation",
+        string: "Homebrew Installation",
         func: findInstallChannel.linux_macos_homebrewInstalled,
       },
     ],
@@ -26,7 +26,7 @@ const INSTALL_CHANNELS = {
         func: findInstallChannel.linux_nixInstalled,
       },
       {
-        string: "Home Brew Installation",
+        string: "Homebrew Installation",
         func: findInstallChannel.linux_macos_homebrewInstalled,
       },
       // TODO AUR

@@ -4,7 +4,7 @@ const fs = require("fs");
 
 // https://github.com/shelljs/shelljs/wiki/Electron-compatibility
 // ShellJS is not totally compatible within Electron.
-// We may need to look at running this within a task, but otherwise this may be
+// We may need to look at running this within a task, but otherwise this should be
 // sufficient to get `exec` working
 shell.config.execPath = shell.which("node").toString();
 
@@ -52,12 +52,8 @@ function windows_chocoInstalled() {
   if (chocoCheck.code !== 0) {
     return false;
   }
-
-  if (chocoCheck.stdout.includes("pulsar")) {
-    return true;
-  } else {
-    return false;
-  }
+  
+  return chocoCheck.stdout.includes("pulsar");
 }
 
 function windows_wingetInstalled() {
@@ -71,11 +67,7 @@ function windows_wingetInstalled() {
     return false;
   }
 
-  if (wingetCheck.stdout.includes("Pulsar")) {
-    return true;
-  } else {
-    return false;
-  }
+  return wingetCheck.stdout.includes("Pulsar");
 }
 
 function linux_macos_homebrewInstalled() {
@@ -89,11 +81,7 @@ function linux_macos_homebrewInstalled() {
     return false;
   }
 
-  if (homebrewCheck.stdout.includes("pulsar")) {
-    return true;
-  } else {
-    return false;
-  }
+  return homebrewCheck.stdout.includes("pulsar");
 }
 
 function linux_nixInstalled() {
@@ -114,11 +102,7 @@ function linux_nixInstalled() {
     return false;
   }
 
-  if (nixCheck.stdout.includes("pulsar.nemo_action")) {
-    return true;
-  } else {
-    return false;
-  }
+  return nixCheck.stdout.includes("pulsar.nemo_action");
 }
 
 function linux_debGetInstalled() {
@@ -132,27 +116,11 @@ function linux_debGetInstalled() {
     return false;
   }
 
-  if (debGetCheck.stdout.includes("pulsar")) {
-    return true;
-  } else {
-    return false;
-  }
+  return debGetCheck.stdout.includes("pulsar");
 }
 
 function linux_flatpakInstalled() {
-  //if (atom.applicationDelegate.getWindowLoadSettings().resourcePath !== "/app/Pulsar/reousrces/app.asar") {
-  //  return false;
-  //}
-
-  //if (fs.existsSync(`${process.env.HOME}/.var/app/dev.pulsar_edit.Pulsar`)) {
-  //  return true;
-  //}
-
-  if (process.env.FLATPAK_ID === "dev.pulsar_edit.Pulsar") {
-    return true;
-  } else {
-    return false;
-  }
+  return process.env.FLATPAK_ID === "dev.pulsar_edit.Pulsar";
 }
 
 module.exports = {
