@@ -1,3 +1,5 @@
+# This repository has been archived, as this package is now [included](https://github.com/pulsar-edit/pulsar/pull/656) within the core of the Pulsar Editor.
+
 # Pulsar Updater
 
 This package, is going to be asked for consideration of inclusion into the core editor.
